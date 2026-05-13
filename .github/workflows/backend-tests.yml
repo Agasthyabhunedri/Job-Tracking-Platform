@@ -1,0 +1,144 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "services/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "services/**"
+
+jobs:
+  test-auth-service:
+    name: Auth Service Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: jobtracker_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: services/auth-service/requirements.txt
+
+      - name: Install dependencies
+        working-directory: services/auth-service
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Lint
+        working-directory: services/auth-service
+        run: |
+          pip install flake8
+          flake8 app/ --max-line-length=120 --ignore=E501,W503 || true
+
+      - name: Run tests
+        working-directory: services/auth-service
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jobtracker_test
+          JWT_SECRET: test-secret
+        run: pytest tests/ -v --tb=short --cov=app --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: services/auth-service/coverage.xml
+          flags: auth-service
+
+  test-job-service:
+    name: Job Service Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: jobtracker_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: services/job-service/requirements.txt
+
+      - name: Install dependencies
+        working-directory: services/job-service
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run tests
+        working-directory: services/job-service
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jobtracker_test
+          REDIS_URL: redis://localhost:6379
+        run: pytest tests/ -v --tb=short
+
+  test-payment-service:
+    name: Payment Service Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: jobtracker_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: services/payment-service
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run tests
+        working-directory: services/payment-service
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jobtracker_test
+        run: pytest tests/ -v --tb=short

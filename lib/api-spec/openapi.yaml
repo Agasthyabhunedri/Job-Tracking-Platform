@@ -1,0 +1,888 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Job Tracker Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: companies
+    description: Company management
+  - name: applications
+    description: Job application tracking
+  - name: analytics
+    description: Analytics and statistics
+  - name: payments
+    description: Subscription and billing
+  - name: notifications
+    description: Notification management
+  - name: ai
+    description: AI recommendations
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # Auth
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # Companies
+  /companies:
+    get:
+      operationId: listCompanies
+      tags: [companies]
+      summary: List all companies for current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Company"
+    post:
+      operationId: createCompany
+      tags: [companies]
+      summary: Create a company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+
+  /companies/{id}:
+    get:
+      operationId: getCompany
+      tags: [companies]
+      summary: Get a company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+    patch:
+      operationId: updateCompany
+      tags: [companies]
+      summary: Update a company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+    delete:
+      operationId: deleteCompany
+      tags: [companies]
+      summary: Delete a company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Job Applications
+  /applications:
+    get:
+      operationId: listApplications
+      tags: [applications]
+      summary: List job applications
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: companyId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Application"
+    post:
+      operationId: createApplication
+      tags: [applications]
+      summary: Create a job application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{id}:
+    get:
+      operationId: getApplication
+      tags: [applications]
+      summary: Get a job application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+    patch:
+      operationId: updateApplication
+      tags: [applications]
+      summary: Update a job application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+    delete:
+      operationId: deleteApplication
+      tags: [applications]
+      summary: Delete a job application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /applications/{id}/status:
+    patch:
+      operationId: updateApplicationStatus
+      tags: [applications]
+      summary: Update application status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  # Analytics
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [analytics]
+      summary: Get overall analytics summary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
+  /analytics/pipeline:
+    get:
+      operationId: getApplicationPipeline
+      tags: [analytics]
+      summary: Get applications grouped by status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PipelineStage"
+
+  /analytics/weekly:
+    get:
+      operationId: getWeeklyApplications
+      tags: [analytics]
+      summary: Get applications per week (last 8 weeks)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeeklyCount"
+
+  /analytics/top-companies:
+    get:
+      operationId: getTopCompanies
+      tags: [analytics]
+      summary: Get top companies by application count
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompanyCount"
+
+  # Payments
+  /payments/plans:
+    get:
+      operationId: listPlans
+      tags: [payments]
+      summary: List available plans
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Plan"
+
+  /payments/subscription:
+    get:
+      operationId: getSubscription
+      tags: [payments]
+      summary: Get current user subscription
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+    post:
+      operationId: updateSubscription
+      tags: [payments]
+      summary: Upgrade or downgrade plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /payments/billing-history:
+    get:
+      operationId: getBillingHistory
+      tags: [payments]
+      summary: Get billing history
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BillingRecord"
+
+  # Notifications
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List notifications for current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /notifications/read-all:
+    patch:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      summary: Mark all notifications as read
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # AI
+  /ai/recommendations:
+    get:
+      operationId: getAiRecommendations
+      tags: [ai]
+      summary: Get AI recommendations for the current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiRecommendation"
+
+  /ai/analyze/{applicationId}:
+    get:
+      operationId: analyzeApplication
+      tags: [ai]
+      summary: Analyze a specific application and return AI suggestions
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiAnalysis"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    SuccessResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+
+    # Auth
+    RegisterInput:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, email, name, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+
+    # Companies
+    Company:
+      type: object
+      required: [id, name, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        website:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        applicationCount:
+          type: integer
+        createdAt:
+          type: string
+
+    CompanyInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        website:
+          type: string
+        industry:
+          type: string
+        location:
+          type: string
+        notes:
+          type: string
+
+    CompanyUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        website:
+          type: string
+        industry:
+          type: string
+        location:
+          type: string
+        notes:
+          type: string
+
+    # Applications
+    Application:
+      type: object
+      required: [id, jobTitle, status, createdAt]
+      properties:
+        id:
+          type: integer
+        jobTitle:
+          type: string
+        status:
+          type: string
+          enum: [applied, screening, interview, offer, rejected, withdrawn]
+        companyId:
+          type: ["integer", "null"]
+        companyName:
+          type: ["string", "null"]
+        jobUrl:
+          type: ["string", "null"]
+        salary:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        appliedAt:
+          type: ["string", "null"]
+        nextFollowUpAt:
+          type: ["string", "null"]
+        interviewStage:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    ApplicationInput:
+      type: object
+      required: [jobTitle]
+      properties:
+        jobTitle:
+          type: string
+        companyId:
+          type: integer
+        jobUrl:
+          type: string
+        salary:
+          type: string
+        location:
+          type: string
+        notes:
+          type: string
+        appliedAt:
+          type: string
+        nextFollowUpAt:
+          type: string
+        status:
+          type: string
+          enum: [applied, screening, interview, offer, rejected, withdrawn]
+
+    ApplicationUpdate:
+      type: object
+      properties:
+        jobTitle:
+          type: string
+        companyId:
+          type: ["integer", "null"]
+        jobUrl:
+          type: string
+        salary:
+          type: string
+        location:
+          type: string
+        notes:
+          type: string
+        appliedAt:
+          type: string
+        nextFollowUpAt:
+          type: string
+        interviewStage:
+          type: string
+        status:
+          type: string
+          enum: [applied, screening, interview, offer, rejected, withdrawn]
+
+    StatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [applied, screening, interview, offer, rejected, withdrawn]
+        interviewStage:
+          type: string
+
+    # Analytics
+    AnalyticsSummary:
+      type: object
+      required: [totalApplications, activeApplications, interviewRate, offerRate, rejectionRate, avgResponseDays]
+      properties:
+        totalApplications:
+          type: integer
+        activeApplications:
+          type: integer
+        interviewRate:
+          type: number
+        offerRate:
+          type: number
+        rejectionRate:
+          type: number
+        avgResponseDays:
+          type: number
+        thisWeek:
+          type: integer
+        thisMonth:
+          type: integer
+
+    PipelineStage:
+      type: object
+      required: [status, count]
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+        label:
+          type: string
+
+    WeeklyCount:
+      type: object
+      required: [week, count]
+      properties:
+        week:
+          type: string
+        count:
+          type: integer
+
+    CompanyCount:
+      type: object
+      required: [companyName, count]
+      properties:
+        companyName:
+          type: string
+        count:
+          type: integer
+
+    # Payments
+    Plan:
+      type: object
+      required: [id, name, price, interval, features, applicationLimit]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        interval:
+          type: string
+        applicationLimit:
+          type: ["integer", "null"]
+        features:
+          type: array
+          items:
+            type: string
+        popular:
+          type: boolean
+
+    Subscription:
+      type: object
+      required: [id, planId, planName, status, currentPeriodEnd]
+      properties:
+        id:
+          type: integer
+        planId:
+          type: string
+        planName:
+          type: string
+        status:
+          type: string
+        currentPeriodEnd:
+          type: string
+        cancelAtPeriodEnd:
+          type: boolean
+
+    SubscriptionInput:
+      type: object
+      required: [planId]
+      properties:
+        planId:
+          type: string
+
+    BillingRecord:
+      type: object
+      required: [id, amount, status, description, createdAt]
+      properties:
+        id:
+          type: integer
+        amount:
+          type: number
+        status:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+
+    # Notifications
+    Notification:
+      type: object
+      required: [id, type, title, message, read, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        read:
+          type: boolean
+        applicationId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    # AI
+    AiRecommendation:
+      type: object
+      required: [id, type, priority, title, description]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [follow_up, improve_resume, high_priority, status_change, networking]
+        priority:
+          type: string
+          enum: [high, medium, low]
+        title:
+          type: string
+        description:
+          type: string
+        applicationId:
+          type: ["integer", "null"]
+        applicationTitle:
+          type: ["string", "null"]
+        companyName:
+          type: ["string", "null"]
+
+    AiAnalysis:
+      type: object
+      required: [applicationId, score, suggestions, nextSteps]
+      properties:
+        applicationId:
+          type: integer
+        score:
+          type: integer
+        suggestions:
+          type: array
+          items:
+            type: string
+        nextSteps:
+          type: array
+          items:
+            type: string
+        estimatedResponse:
+          type: ["string", "null"]

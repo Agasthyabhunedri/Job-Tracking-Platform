@@ -1,0 +1,243 @@
+Build a production-grade cloud-native distributed Job Tracking Platform.
+
+Goal:
+Create a full-stack microservices-based job application tracking platform that I can run locally with Docker Compose, test with automated test cases, and later deploy to AWS with CI/CD.
+
+Tech Stack:
+Frontend:
+- React.js
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- React Query or TanStack Query
+- Axios
+
+Backend:
+- Python
+- FastAPI
+- SQLAlchemy
+- Alembic
+- Pydantic
+- PostgreSQL
+- Redis
+- gRPC with Protocol Buffers
+- SQS-compatible message queue locally using LocalStack or simple Redis queue fallback
+
+Architecture:
+Use microservices. Each backend service must be in its own folder and Docker container.
+
+Services to build:
+1. API Gateway Service
+   - Public REST API entrypoint
+   - Routes requests to internal services
+   - JWT authentication middleware
+   - Rate limiting
+   - Health check endpoint
+
+2. Auth Service
+   - User registration
+   - Login
+   - JWT access token generation
+   - Password hashing
+   - User profile endpoint
+
+3. Job Application Service
+   - Create company
+   - Create job application
+   - Update application status
+   - Filter by status, company, date
+   - Track interview stages
+   - Owner-scoped access only
+
+4. Payment Plans Service
+   - Free, Pro, Premium plans
+   - User subscription table
+   - Upgrade/downgrade plan
+   - Usage limits per plan
+   - Billing history
+   - Mock Stripe-style webhook endpoint
+
+5. Notification Service
+   - Consume events from queue
+   - Send mock email notifications
+   - Store notification logs
+   - Retry failed notifications
+   - Dead-letter queue simulation
+
+6. Analytics Service
+   - Track number of applications
+   - Interview conversion rate
+   - Rejection/offer stats
+   - Applications per week
+   - Expose analytics API
+
+7. AI Agent Service
+   - Mock AI recommendation endpoint
+   - Analyze job application data
+   - Return suggestions like “follow up”, “improve resume”, “high priority”
+   - Keep it modular so real LLM integration can be added later
+
+Communication:
+- Public communication: REST via API Gateway
+- Internal service-to-service communication: gRPC
+- Async communication: queue/events
+- Example events:
+  - user.created
+  - job.created
+  - application.status_updated
+  - payment.plan_updated
+  - notification.requested
+
+Database:
+Use PostgreSQL.
+For local development, one PostgreSQL instance is fine, but use separate schemas or table prefixes for each service:
+- auth_users
+- jobs_companies
+- jobs_applications
+- payments_plans
+- payments_subscriptions
+- notifications_logs
+- analytics_events
+
+Redis:
+Use Redis for:
+- caching
+- rate limiting
+- idempotency keys
+- temporary background job state
+
+Distributed Systems Features:
+Implement:
+- idempotency keys for POST requests
+- retries for async events
+- dead-letter queue simulation
+- health endpoints
+- readiness endpoints
+- structured JSON logging
+- request correlation IDs
+- rate limiting
+- graceful error handling
+- service-level separation
+- environment-based config
+
+Local Development:
+Create:
+- docker-compose.yml
+- Dockerfile for each service
+- .env.example
+- Makefile with commands:
+  - make up
+  - make down
+  - make test
+  - make migrate
+  - make logs
+  - make seed
+
+Testing:
+Add automated tests using pytest.
+Include:
+- unit tests
+- API tests
+- auth tests
+- job application tests
+- payment plan tests
+- notification queue tests
+- gRPC service tests
+- idempotency tests
+- rate limiting tests
+
+Frontend Requirements:
+Create a clean dashboard with:
+- Login/Register pages
+- Job applications dashboard
+- Add company form
+- Add job application form
+- Status pipeline view
+- Payment plan page
+- Analytics page
+- AI recommendation page
+
+UI should be simple, modern, responsive, and resume-demo ready.
+
+CI/CD:
+Create GitHub Actions workflow files:
+1. backend-tests.yml
+   - install dependencies
+   - run linting
+   - run pytest
+
+2. frontend-tests.yml
+   - install npm packages
+   - run type check
+   - run build
+
+3. docker-build.yml
+   - build Docker images for all services
+
+4. deploy-aws-template.yml
+   - prepare deployment to AWS ECS Fargate
+   - use placeholders for AWS credentials
+   - explain required GitHub secrets
+
+AWS Deployment Target:
+Prepare the project for this AWS architecture:
+- Frontend: S3 + CloudFront
+- Backend services: ECS Fargate
+- Database: RDS PostgreSQL
+- Cache: ElastiCache Redis
+- Queue: SQS
+- Files: S3
+- Secrets: AWS Secrets Manager
+- Logs: CloudWatch
+- CI/CD: GitHub Actions
+
+Infrastructure:
+Create an infra/ folder.
+Include Terraform starter files for:
+- VPC
+- ECS cluster
+- ECS services
+- RDS PostgreSQL
+- ElastiCache Redis
+- SQS queue
+- S3 bucket
+- IAM roles
+- CloudWatch log groups
+
+Do not make the Terraform overly complex. Make it understandable and beginner-friendly.
+
+Documentation:
+Create a detailed README.md with:
+- project overview
+- architecture diagram in text/mermaid
+- services explanation
+- local setup
+- Docker setup
+- API documentation
+- gRPC explanation
+- testing instructions
+- AWS deployment guide
+- CI/CD guide
+- environment variables
+- future improvements
+
+Also create:
+- docs/ARCHITECTURE.md
+- docs/API.md
+- docs/AWS_DEPLOYMENT.md
+- docs/TESTING.md
+- docs/CI_CD.md
+
+Code Quality:
+- Use clean folder structure
+- Add comments where useful
+- Use type hints
+- Use Pydantic schemas
+- Use proper exception handling
+- Keep code realistic and runnable
+- Do not generate pseudo-code
+- Generate actual working files
+
+Expected Output:
+Generate the complete project file structure and all source code files needed to run this project locally using Docker Compose.

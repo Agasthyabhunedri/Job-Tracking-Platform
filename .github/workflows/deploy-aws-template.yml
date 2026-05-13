@@ -1,0 +1,94 @@
+name: Deploy to AWS ECS Fargate
+
+# ============================================================
+# REQUIRED GITHUB SECRETS (set in Settings > Secrets > Actions):
+#
+#   AWS_ACCESS_KEY_ID       - IAM user access key with ECS/ECR permissions
+#   AWS_SECRET_ACCESS_KEY   - IAM user secret key
+#   ECR_REGISTRY            - e.g. 123456789012.dkr.ecr.us-east-1.amazonaws.com
+#   DB_PASSWORD             - RDS PostgreSQL password
+#   JWT_SECRET              - JWT signing secret (use a long random string)
+# ============================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Docker image tag to deploy"
+        required: true
+        default: "latest"
+
+env:
+  AWS_REGION: us-east-1
+  ECS_CLUSTER: jobflow-cluster
+  SERVICES: "api-gateway auth-service job-service payment-service notification-service analytics-service ai-agent-service"
+
+jobs:
+  deploy:
+    name: Deploy to ECS Fargate
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy services
+        env:
+          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+        run: |
+          for SERVICE in $SERVICES; do
+            echo "Deploying $SERVICE..."
+            aws ecs update-service \
+              --cluster $ECS_CLUSTER \
+              --service jobflow-$SERVICE \
+              --force-new-deployment \
+              --region $AWS_REGION
+          done
+
+      - name: Wait for services to stabilize
+        run: |
+          for SERVICE in $SERVICES; do
+            echo "Waiting for $SERVICE..."
+            aws ecs wait services-stable \
+              --cluster $ECS_CLUSTER \
+              --services jobflow-$SERVICE \
+              --region $AWS_REGION
+          done
+
+      - name: Deploy frontend to S3 + CloudFront
+        run: |
+          # Build frontend
+          npm install -g pnpm
+          pnpm install --frozen-lockfile
+          pnpm --filter @workspace/job-tracker run build \
+            --env PORT=3000 BASE_PATH=/ NODE_ENV=production
+
+          # Upload to S3
+          aws s3 sync artifacts/job-tracker/dist/public/ \
+            s3://jobflow-frontend-prod/ \
+            --delete \
+            --cache-control "public, max-age=31536000" \
+            --exclude "index.html"
+
+          aws s3 cp artifacts/job-tracker/dist/public/index.html \
+            s3://jobflow-frontend-prod/index.html \
+            --cache-control "no-cache, no-store, must-revalidate"
+
+          # Invalidate CloudFront cache
+          # aws cloudfront create-invalidation \
+          #   --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+          #   --paths "/*"
+
+      - name: Deployment summary
+        run: |
+          echo "✓ Deployment complete!"
+          echo "  Image tag: ${{ github.event.inputs.image_tag }}"
+          echo "  Cluster: $ECS_CLUSTER"
+          echo "  Region: $AWS_REGION"
