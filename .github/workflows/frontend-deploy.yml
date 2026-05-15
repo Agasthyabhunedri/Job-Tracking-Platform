@@ -11,7 +11,7 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
-      - ".github/workflows/frontend.yml"
+      - ".github/workflows/frontend-deploy.yml"
   workflow_dispatch:
 
 env:
