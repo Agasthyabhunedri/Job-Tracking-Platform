@@ -5,11 +5,11 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY services/api-gateway/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app/ .
+COPY services/api-gateway/app/ ./app/
 
 EXPOSE 8000
 
-CMD ["python", "main.py"]
+CMD ["python", "app/main.py"]
