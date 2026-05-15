@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $ECR_REPOSITORY:latest .
+          docker build -t $ECR_REPOSITORY:latest -f services/api-gateway/Dockerfile .
 
       - name: Tag Docker image
         run: |
