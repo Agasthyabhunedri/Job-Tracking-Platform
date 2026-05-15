@@ -13,8 +13,11 @@ COPY lib/db/ ./lib/db/
 
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
-RUN pnpm --filter @workspace/job-tracker run build \
-    --env PORT=3000 BASE_PATH=/ NODE_ENV=production
+ENV PORT=3000
+ENV BASE_PATH=/
+ENV NODE_ENV=production
+
+RUN pnpm --filter @workspace/job-tracker run build
 
 FROM nginx:1.27-alpine
 COPY --from=builder /app/artifacts/job-tracker/dist/public /usr/share/nginx/html
