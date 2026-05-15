@@ -11,7 +11,7 @@ COPY lib/api-client-react/ ./lib/api-client-react/
 COPY lib/api-spec/ ./lib/api-spec/
 COPY lib/db/ ./lib/db/
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 RUN pnpm --filter @workspace/job-tracker run build \
     --env PORT=3000 BASE_PATH=/ NODE_ENV=production
