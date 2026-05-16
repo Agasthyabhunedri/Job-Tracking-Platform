@@ -18,7 +18,9 @@ ENV PORT=3000
 ENV BASE_PATH=/
 ENV NODE_ENV=production
 
-RUN pnpm --filter @workspace/job-tracker run build
+RUN pnpm --filter @workspace/job-tracker run build && \
+    echo "=== CHECKING BUILD OUTPUT ===" && \
+    find /app/artifacts/job-tracker/dist -maxdepth 2 -type f
 
 FROM nginx:1.27-alpine
 COPY --from=builder /app/artifacts/job-tracker/dist /usr/share/nginx/html
