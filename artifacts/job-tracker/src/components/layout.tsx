@@ -96,7 +96,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-3 px-2 py-2">
           <Avatar>
             <AvatarFallback className="bg-primary/10 text-primary">
-              {user.name.charAt(0).toUpperCase()}
+              {(user?.name ?? "U").charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
