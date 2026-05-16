@@ -88,7 +88,7 @@ export default function Analytics() {
               </div>
             ) : (
               <div className="space-y-4">
-                {topCompanies?.slice(0, 5).map((tc, i) => (
+                {(Array.isArray(topCompanies) ? topCompanies : [])?.slice(0, 5).map((tc, i) => (
                   <div key={i} className="flex justify-between items-center">
                     <span className="font-medium text-sm">{tc.companyName}</span>
                     <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-md font-semibold">{tc.count} apps</span>
