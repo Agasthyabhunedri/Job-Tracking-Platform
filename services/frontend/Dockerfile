@@ -27,7 +27,7 @@ FROM nginx:1.27-alpine
 RUN rm -rf /usr/share/nginx/html/*
 RUN rm -f /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /app/artifacts/job-tracker/dist/ /usr/share/nginx/html/
+COPY --from=builder /app/artifacts/job-tracker/dist/public/ /usr/share/nginx/html/
 COPY services/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
