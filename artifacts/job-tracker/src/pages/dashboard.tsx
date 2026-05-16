@@ -145,7 +145,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {recentApps?.slice(0, 5).map((app) => (
+                {(Array.isArray(recentApps) ? recentApps : [])?.slice(0, 5).map((app) => (
                   <Link key={app.id} href={`/applications/${app.id}`}>
                     <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer group">
                       <div className="flex items-center justify-between">
