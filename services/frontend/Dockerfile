@@ -5,6 +5,7 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY tsconfig.base.json ./tsconfig.base.json
 COPY lib/ ./lib/
 COPY artifacts/job-tracker/ ./artifacts/job-tracker/
 COPY lib/api-client-react/ ./lib/api-client-react/
