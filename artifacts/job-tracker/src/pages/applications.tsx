@@ -73,7 +73,7 @@ export default function Applications() {
     });
   };
 
-  const filteredApps = (Array.isArray(applications) ? applications : []).map((error, index).filter(app => {
+  const filteredApps = (Array.isArray(applications) ? applications : []).filter(app => {
     if (statusFilter !== "all" && app.status !== statusFilter) return false;
     if (search && !app.jobTitle.toLowerCase().includes(search.toLowerCase()) && 
         !(app.companyName || "").toLowerCase().includes(search.toLowerCase())) return false;
