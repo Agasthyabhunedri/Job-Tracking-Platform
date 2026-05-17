@@ -111,7 +111,7 @@ export default function Companies() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {companies?.map(company => (
+          {(Array.isArray(companies) ? companies : []).map(company => (
             <Card key={company.id} className="hover:border-primary/50 transition-colors">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2">
