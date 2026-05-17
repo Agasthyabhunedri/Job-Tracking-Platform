@@ -119,7 +119,7 @@ export default function Applications() {
                     <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select a company" /></SelectTrigger></FormControl>
                       <SelectContent>
-                        {companies?.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>)}
+                        {(Array.isArray(campanies) ? comapanies : [])?.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -203,7 +203,7 @@ export default function Applications() {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredApps?.map(app => (
+          {(Array.isArray(filteredApps) ? filteredApps : [])?.map(app => (
             <Link key={app.id} href={`/applications/${app.id}`}>
               <Card className="hover:border-primary/50 transition-colors cursor-pointer group">
                 <CardContent className="p-6">
