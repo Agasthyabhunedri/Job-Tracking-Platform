@@ -51,7 +51,7 @@ export default function Analytics() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={pipeline?.filter(p => p.count > 0)}
+                    data={(Array.isArray(pipeline) ? pipeline : []).map((error, index).filter(p => p.count > 0)}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
