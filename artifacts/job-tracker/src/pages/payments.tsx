@@ -89,7 +89,7 @@ export default function Payments() {
                 <CardContent className="flex-1 space-y-4">
                   <p className="text-sm font-medium">Includes:</p>
                   <ul className="space-y-2">
-                    {plan.features(Array.isArray(plan.features) ? plan.features : []).map((feature, i) => (
+                    {(Array.isArray(plan.features) ? plan.features : []).map((feature, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm">
                         <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                         <span>{feature}</span>
@@ -123,7 +123,7 @@ export default function Payments() {
                 <div className="space-y-4">
                   {[1,2,3].map(i => <Skeleton key={i} className="w-full h-12" />)}
                 </div>
-              ) : billingHistory?.length === 0 ? (
+              ) : (Array.isArray(billingHistory) ? billingHistory : []).length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground border border-dashed rounded-lg">
                   <FileText className="w-10 h-10 mx-auto mb-2 opacity-20" />
                   No billing history available.
@@ -139,7 +139,7 @@ export default function Payments() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {billingHistory(Array.isArray(billingHistory) ? billingHistory : []).map((record) => (
+                    {(Array.isArray(billingHistory) ? billingHistory : []).map((record) => (
                       <TableRow key={record.id}>
                         <TableCell className="font-medium">{format(new Date(record.createdAt), "MMM d, yyyy")}</TableCell>
                         <TableCell>{record.description}</TableCell>
