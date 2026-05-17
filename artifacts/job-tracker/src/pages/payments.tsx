@@ -72,7 +72,7 @@ export default function Payments() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoadingPlans ? (
               [1,2,3].map(i => <Skeleton key={i} className="h-96 w-full" />)
-            ) : (Array.isArray(plains) ? plains : []).map(plan => (
+            ) : (Array.isArray(plans) ? plans : []).map(plan => (
               <Card key={plan.id} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-md scale-105 z-10' : ''}`}>
                 {plan.popular && (
                   <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg flex items-center gap-1">
