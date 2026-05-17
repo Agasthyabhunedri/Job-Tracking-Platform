@@ -72,7 +72,7 @@ export default function Payments() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoadingPlans ? (
               [1,2,3].map(i => <Skeleton key={i} className="h-96 w-full" />)
-            ) : plans?.map(plan => (
+            ) : (Array.isArray(plains) ? plains : []).map(plan => (
               <Card key={plan.id} className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-md scale-105 z-10' : ''}`}>
                 {plan.popular && (
                   <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg flex items-center gap-1">
@@ -89,7 +89,7 @@ export default function Payments() {
                 <CardContent className="flex-1 space-y-4">
                   <p className="text-sm font-medium">Includes:</p>
                   <ul className="space-y-2">
-                    {plan.features?.map((feature, i) => (
+                    {plan.features(Array.isArray(plan.features) ? plan.features : []).map((feature, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm">
                         <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                         <span>{feature}</span>
@@ -139,7 +139,7 @@ export default function Payments() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {billingHistory?.map((record) => (
+                    {billingHistory(Array.isArray(billingHistory) ? billingHistory : []).map((record) => (
                       <TableRow key={record.id}>
                         <TableCell className="font-medium">{format(new Date(record.createdAt), "MMM d, yyyy")}</TableCell>
                         <TableCell>{record.description}</TableCell>
