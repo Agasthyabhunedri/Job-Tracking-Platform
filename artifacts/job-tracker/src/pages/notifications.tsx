@@ -41,7 +41,7 @@ export default function Notifications() {
           <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
           <p className="text-muted-foreground">Stay updated on your job search progress.</p>
         </div>
-        <Button variant="outline" onClick={handleMarkAllRead} disabled={!(Array.isArray(notifications) ? notifications : []).map((error, index).some(n => !n.read)}>
+        <Button variant="outline" onClick={handleMarkAllRead} disabled={!(Array.isArray(notifications) ? notifications : []).some(n => !n.read)}>
           <Check className="w-4 h-4 mr-2" /> Mark all as read
         </Button>
       </div>
