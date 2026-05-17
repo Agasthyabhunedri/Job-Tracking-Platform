@@ -56,7 +56,7 @@ export default function Notifications() {
             <p className="text-muted-foreground">You have no new notifications.</p>
           </div>
         ) : (
-          notifications?.map(notif => (
+          (Array.isArray(notifications) ? notifications : []).map(notif => (
             <Card key={notif.id} className={`transition-colors ${!notif.read ? 'bg-primary/5 border-primary/20' : ''}`}>
               <CardContent className="p-4 flex gap-4">
                 <div className="shrink-0 mt-1">
