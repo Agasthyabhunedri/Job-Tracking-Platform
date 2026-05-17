@@ -50,7 +50,7 @@ export default function AI() {
             <p className="text-muted-foreground">Add more applications to get AI-powered advice.</p>
           </div>
         ) : (
-          recommendations?.map(rec => (
+          (Array.isArray(recommandations) ? recommandations : [])?.map(rec => (
             <Card key={rec.id} className="relative overflow-hidden group hover:border-primary/50 transition-colors flex flex-col">
               <div className={`absolute top-0 inset-x-0 h-1 ${
                 rec.priority === 'high' ? 'bg-red-500' : 
