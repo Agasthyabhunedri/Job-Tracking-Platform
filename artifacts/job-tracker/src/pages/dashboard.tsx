@@ -106,7 +106,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {pipeline?.map((stage) => (
+                {(Array.isArray(pipeline) ? pipeline : [])?.map((stage) => (
                   <div key={stage.status} className="flex items-center">
                     <div className="w-32 text-sm font-medium">{stage.label || stage.status}</div>
                     <div className="flex-1 ml-4">
