@@ -60,7 +60,7 @@ export default function Analytics() {
                     dataKey="count"
                     nameKey="label"
                   >
-                    {Array.isArray(pipeline) ? pipeline : [].filter(p => p.count > 0).map((entry, index) => (
+                    {(Array.isArray(pipeline) ? pipeline : []).filter(p => p.count > 0).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
