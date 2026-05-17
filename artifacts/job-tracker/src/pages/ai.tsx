@@ -43,14 +43,14 @@ export default function AI() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
           [1,2,3,4,5].map(i => <Skeleton key={i} className="h-48 w-full" />)
-        ) : recommendations?.length === 0 ? (
+        ) : (Array.isArray(recommendations) ? recommendations : []).length === 0 ? (
           <div className="col-span-full text-center py-12 border rounded-lg bg-card border-dashed">
             <Sparkles className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
             <h3 className="text-lg font-medium">No recommendations yet</h3>
             <p className="text-muted-foreground">Add more applications to get AI-powered advice.</p>
           </div>
         ) : (
-          (Array.isArray(recommandations) ? recommandations : [])?.map(rec => (
+          (Array.isArray(recommendations) ? recommendations : []).map(rec => (
             <Card key={rec.id} className="relative overflow-hidden group hover:border-primary/50 transition-colors flex flex-col">
               <div className={`absolute top-0 inset-x-0 h-1 ${
                 rec.priority === 'high' ? 'bg-red-500' : 
